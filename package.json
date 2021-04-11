@@ -1,8 +1,10 @@
 {
   "dependencies": {
+    "@iamtraction/google-translate": "github:iamtraction/google-translate",
     "asana": "^0.18.5",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
+    "cookie-session": "^1.4.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "dotenv-expand": "^5.1.0",

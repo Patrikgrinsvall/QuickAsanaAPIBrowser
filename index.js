@@ -16,7 +16,8 @@ let dotenv = require('dotenv')
 let dotEnvExpand = require('dotenv-expand')
 dotEnvExpand(dotenv.config());
 var fs =  require( 'fs');
-
+const translate = require('@iamtraction/google-translate');
+var cookieSession =  require('cookie-session');;
 // Create an Asana client. Do this per request since it keeps state that
 // shouldn't be shared across requests.
 function createClient() {
@@ -28,14 +29,25 @@ function createClient() {
 }
 
 // Causes request cookies to be parsed, populating `req.cookies`.
-app.use(cookieParser());
+
 var GlobalGookie ="";
 try{
-if(fs.readFileSync("cookiefile", GlobalGookie)){
-    req.cookies.token = GlobalGookie;
-}}catch (e) {
+    if(fs.readFileSync("cookiefile", GlobalGookie)){
+        app.use(cookieSession({
+            name: 'token',
+            keys: [GlobalGookie]
+
+            ,
+            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        }));
+    }else {
+        app.use(cookieParser());
+    }
+}catch (e) {
     console.log("not found", e)
-}
+};
+
+
 
 app.get('/', function(req, res) {
     var client = createClient();
@@ -43,6 +55,18 @@ res.send('<h1>Asana script</h1>'+
 '<li><a href="/"' + client.app.asanaAuthorizeUrl() + '">Login</a></li>'+
 '<li><a href="/workspaces">Workspaces</a></li>');
 });
+
+function __t(string, from="se",to ="en") {
+    let fname = "cache/"+string+"_"+from+"_"+to;
+    let trans="";
+    if(trans = fs.readFile(fname)) return trans;
+    return translate("name", {from:"sv", to:"en"}).then(res => {
+        fs.writeFileSync(fname, res);
+        return res
+    });
+
+}
+
 app.get('/task/:taskId', function(req, res) {
     var client = createClient();
     // If token is in the cookie, use it to show info.
@@ -54,10 +78,10 @@ app.get('/task/:taskId', function(req, res) {
         // we have acquired.
         client.useOauth({credentials: token});
 
-        client.users.me().then(function (user) {
-            let task = client.tasks.getTask(req.param("taskId"), ["created_at",
+        client.users.me().then(function () {
+            let task = client.tasks.getTask(req.params("taskId"), ["created_at",
                 "modified_at",
-                "name",
+                __t("name"),
                 "notes",
                 "permalink_url",
                 "resource_type",
@@ -78,8 +102,8 @@ app.get('/task/:taskId', function(req, res) {
 app.get('/workspaces', function(req, res) {
     var client = createClient();
     // If token is in the cookie, use it to show info.
-    var token = req.cookies.token;
-    if (token) {
+    var token = req.session.token;
+    if (token)
 
         // Here's where we direct the client to use Oauth with the credentials
         // we have acquired.
@@ -117,7 +141,8 @@ app.get('/workspaces', function(req, res) {
 app.get('/tasks/:workspaceId', function(req, res) {
     var client = createClient();
     // If token is in the cookie, use it to show info.
-    var token = req.cookies.token;
+    console.log(req.session)
+    token = req.session.token;
     var client = Asana.Client.create({"defaultHeaders": {"asana-enable": "new_user_task_lists,string_ids,new_sections"}}).useAccessToken(token);
     if (token) {
         client.users.me().then(user => {
