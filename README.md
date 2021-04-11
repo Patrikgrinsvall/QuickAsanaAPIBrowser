@@ -11,10 +11,10 @@ so i can have all my todos and specifications in the same place.
 5. npm run start
 6. open browser to the port outputten from start.
 
-You should first login to asana to get some secrets then redirected to an overview of workspaces and inside each workspace get a list of tasks.
+You should first login to asana to get some secrets then redirected to an overview of workspaces and inside each workspace get a list of tasks. The access token is saved on disk so be careful and have this server running behind some kind of authentication, anyone gaining access to this if hosted public can access your asana account and all inside.
 
 ## License
-Free to use for anyone to use in anyway, (MIT).
+Free to use for anyone to use, (MIT).
 
 But please if you build something similar for github, gitlab, trello, jira, or any other project management or code system,
 ping me at patrik@silentridge.io.
