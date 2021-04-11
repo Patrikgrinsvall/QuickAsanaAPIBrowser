@@ -5,20 +5,7 @@
  * 2. Set the application's redirect URI to be:
  *      `http://localhost:8338/oauth_callback`
  * 3. Note the app's client ID and secret key for use when running the
- *    web server, below.
- *
- * Usage:
- *clientid:  1200178574246702
- secret: 62bd837a99259dfa4facd227402e477d
-
- https://app.asana.com/-/oauth_authorize?response_type=code&client_id=1200178574246702&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&state=<STATE_PARAM>
-
- urn:ietf:wg:oauth:2.0:oob
-
- *   export ASANA_CLIENT_ID=...
- *   export ASANA_CLIENT_SECRET=...
- *   [export PORT=...]
- *   node oauth_webserver.js
+ *    web server
  */
 var Asana = require('asana');
 var express = require('express');
